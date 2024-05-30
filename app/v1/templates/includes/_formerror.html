@@ -1,0 +1,11 @@
+  <!-- templates/includes/_formerror.html -->
+  </br>
+  {% if not form.errors == {}%}
+    {% for field, errors in form.errors.items() %}
+      {% for err in errors %}
+        <div class="alert alert-warning">Error in the {{ field }} field - {{ err }}</div>
+      {% endfor %}
+    {% endfor %}
+      </br>
+  </br>
+  {% endif %}

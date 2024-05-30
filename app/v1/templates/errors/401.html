@@ -1,0 +1,28 @@
+<!-- templates/errors/401.html -->
+
+{% extends "base.html" %}
+{% block title %} Error 401 {% endblock %}
+{% block wrapper %}<h1 class="display-4"> 401 Error </h1>{% endblock %}
+{% block content %}
+<div class="content-section">
+  <div class="outer">
+    <div class="middle">
+      <div class="inner">
+        <div style="text-align: center">
+            <h3> Authentication Error. Bad credentials (e.g password) or the server does not understand the request.
+                Please try again later.
+            </h3>
+            <h4> {{ err }} </h4>
+            <hr class="intro-divider">
+            <!--suppress HtmlUnknownTarget -->
+            <a class="btn btn-default btn-lg" href="{{ url_for('app_views.home') }}" >
+                <i class="fa fa-home"></i>
+                Home
+            </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

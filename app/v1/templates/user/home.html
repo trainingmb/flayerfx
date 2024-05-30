@@ -1,0 +1,28 @@
+<!-- templates/user/home.html -->
+
+{% extends "base.html" %}
+
+{% block title%}
+Home
+{% endblock %}
+
+{% block wrapper %}<h1 class="display-4"> Home </h1>{% endblock %}
+
+
+{% block content %}
+<h4>
+	<a href="{{url_for('app_views.all_stores')}}">
+		All Stores
+	</a>
+</h4>
+<h4>
+	<a href="{{url_for('app_views.all_products')}}">
+		All Products
+	</a>
+</h4>
+<h4>
+	<a href="{{url_for('app_views.all_prices')}}">
+		All Prices
+	</a>
+</h4>
+{% endblock %}

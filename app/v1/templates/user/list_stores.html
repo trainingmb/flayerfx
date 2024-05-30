@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+<!-- templates/user/list_stores.html -->
+
+{% block title%}
+List Stores
+{% endblock %}
+
+{% block wrapper%}<div align="centre"><h1 class="display-4">Stores</h1></div>{% endblock %}
+
+{% block content %}
+<ul id="store_list" class="store_list">
+
+	{% for store in stores %}
+	<li>
+		<h4><a href="{{url_for('app_views.rud_store', store_id=store.id) }}"> {{store.name}} </a></h4>
+	</li>
+	{% endfor %}
+</ul>
+<a class="link" href="{{ url_for('app_views.create_store') }}">Create New Store</a>
+{% endblock %}

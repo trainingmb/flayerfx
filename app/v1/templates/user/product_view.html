@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+<!-- templates/user/product_view.html -->
+
+{% block title%}
+Product View
+{% endblock %}
+
+{% block includes %}
+    <script src="/static/js/charts.js"></script>
+    <script >
+        var xyValues = [
+                {% for price in prices %}
+                    {x:{{(today - price.created_at).days}}, y:{{price.amount}}},
+                    {x:{{(today - price.fetched_at).days}}, y:{{price.amount}}},
+                {% endfor %}
+            ];
+        new Chart("myChart", {
+          type: "scatter",
+          data: {
+            datasets: [{
+              pointRadius: 4,
+              pointBackgroundColor: "rgb(0,0,255)",
+              data: xyValues
+            }]
+          },
+          options: {
+            legend: {display: false},
+          }
+        });
+    </script>
+{% endblock %}
+
+{% block wrapper%}<div align="centre"><h1 class="display-4">Product {{product.name}} </h1></div>{% endblock %}
+
+{% block content %}
+<div id="product_details_view" class='container product'>
+    <div class="product_details align-right">
+        <p>
+            <strong>Link</strong>:<br>  {{product.link}}
+        </p>
+        <p>
+            <strong>Reference</strong>:<br>  {{product.reference}}
+        </p>
+        <p>
+            <strong>Store Name</strong>:<br>  
+            <a href="{{ url_for('app_views.rud_store', store_id=product.store_id)}}">{{product.store.name}}
+            </a>
+        </p>
+    </div>
+    <div class="product_details_delete float-right">
+        <form class="" action="{{ url_for('app_views.rud_product', store_id=product.store_id, product_id=product.id)}}" method="POST">
+        					<input name="_method" value="DELETE" hidden>
+        					<input class="btn btn-primary btn-sm btn-danger" id="submit" label="delete" name="" type="submit" value="Delete {{ product.name.split(' ')[0].capitalize() }}">
+        </form>
+        	</br>
+    </div>
+    <div class="product_details_edit_button float-right">
+        <button id="edit_product_btn" type="button" class="btn btn-primary btn-sm  btn-link"> Edit {{ product.name }} </button>
+    </div>
+    <div class="product_details_clean float-right">
+        <form class="" action="{{ url_for('app_views.rud_product', store_id=product.store_id, product_id=product.id)}}" method="POST">
+        					<input name="_method" value="CLEAN" hidden>
+        					<input class="btn btn-primary btn-sm btn-warning" id="submit" label="Clean" name="" type="submit" value="Clean {{ product.name.split(' ')[0].capitalize() }}">
+        </form>
+        	</br>
+    </div>
+</div>
+<div id="product_details_edit" class='container product'>
+    <form action="{{ url_for('app_views.rud_product', store_id=product.store_id, product_id=product.id)}}" method="POST">
+    	<table>
+    		<tbody>
+                {{ form.csrf_token }}
+                {% for field in form if not field.name in ["csrf_token", 'submit'] %}
+            		<tr>
+                		<td>{{ field.label }}</td>
+                		<td>{{ field }}</td>
+                		</td><b>{{ " ".join(field.errors) }}</b></td>
+            		</tr>
+            	{% endfor %}
+                <tr>
+                    <td>{{form.submit}}</td>
+                </tr>
+        		<tr>
+        		    <td><button id="cancel_change_btn"class="btn btn-primary btn-sm btn-warning"> Cancel </button></td>
+        	    </tr>
+    		</tbody>
+    	</table>
+    </form>
+</div>
+<div id="prices_in_product">
+	<h4 class="h4"> <a href=""> Prices </a> </h4> </br>
+    <div>
+            <canvas id="myChart" style="width:100%;max-width:700px">
+            </canvas>
+    </div>
+	<div class="well card card-body bg-light">
+	{% if prices %}
+	<ul>
+		{% for price in prices %}
+		<li>
+			<a href="{{ url_for('app_views.rud_price', store_id=product.store_id, product_id=product.id, price_id=price.id)}}"> {{price.amount}} </a> From - {{price.created_at.strftime("%c")}} to {{price.fetched_at.strftime("%c")}} ({{(price.fetched_at-price.created_at).days}} days)
+		</li>
+		{% endfor %}
+	</ul>
+	{% endif %}
+	</br>
+	<a href="{{ url_for('app_views.create_price', store_id=product.store_id, product_id=product.id )}}"> Add Price </a>
+	</div>
+</div>
+	</br>
+
+
+
+
+<script>
+document.getElementById("edit_product_btn").addEventListener("click", showEdit);
+document.getElementById("cancel_change_btn").addEventListener("click", hideEdit);
+document.getElementById("product_details_edit").style.display = "none";
+function showEdit() {
+	document.getElementById("product_details_view").style.display = "none";
+	document.getElementById("product_details_edit").style.display = "block";
+}
+function hideEdit() {
+	document.getElementById("product_details_edit").style.display = "none";
+	document.getElementById("product_details_view").style.display = "block";
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,31 @@
+<!-- templates/user/about.html -->
+
+{% extends "base.html" %}
+
+{% block title%}
+About
+{% endblock %}
+
+{% block wrapper %}<h1 class="display-4"> About </h1>{% endblock %}
+
+{% block content %}
+<div>
+	<table>
+		<thead>
+			<th> Name </th>
+			<th> Number </th>
+		</thead>
+		<tbody>
+
+
+	{% for key, value in cls.items() %}
+			<tr>
+				<td> {{key.capitalize()}} </td>
+				<td> {{value}} </td>
+			</tr>
+	{% endfor %}
+
+		</tbody>
+	</table>
+</div>
+{% endblock %}

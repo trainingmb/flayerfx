@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+
+<!-- templates/user/create_store.html -->
+
+{% block title%}
+Add Store
+{% endblock %}
+
+{% block wrapper%}<div align="centre"><h1 class="display-4">Add Store</h1></div>{% endblock %}
+{% block content %}
+<div class="content-section">
+	{% include 'includes/_formerror.html' %}
+  <br/>
+  {% if form.csrf_token.errors %}
+    <div class="warning">You have submitted an invalid CSRF token</div>
+  {% endif %}
+  <br/>
+  <div class="table-responsive">
+    <br/>
+    <form action="{{url_for('app_views.create_store')}}" method="POST">
+    {{ form.csrf_token }}
+    {% for field in form if not field.name in ["csrf_token", 'submit'] %}
+		<p>{{ field.label }}: {{ field }} <b>{{ " ".join(field.errors) }}</b></p>
+	{% endfor %}
+    {{form.submit}}
+    </form>
+  </div>
+</div>
+{% endblock %}

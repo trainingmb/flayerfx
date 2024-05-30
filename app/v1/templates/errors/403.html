@@ -1,0 +1,26 @@
+<!-- templates/errors/403.html -->
+
+{% extends "base.html" %}
+{% block title %} Error 403 {% endblock %}
+{% block wrapper %}<h1 class="display-4"> 403 Error </h1>{% endblock %}
+{% block content %}
+<div class="content-section">
+  <div class="outer">
+    <div class="middle">
+      <div class="inner">
+        <div style="text-align: center">
+            <h3> You do not have sufficient permissions to access this page. </h3>
+            <h4> {{ err }} </h4>
+            <hr class="intro-divider">
+            <!--suppress HtmlUnknownTarget -->
+            <a class="btn btn-default btn-lg" href="{{ url_for('app_views.home') }}" >
+                <i class="fa fa-home"></i>
+                Home
+            </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

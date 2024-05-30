@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+
+<!-- templates/user/create_price.html -->
+
+{% block title%}
+Add Price
+{% endblock %}
+
+{% block wrapper%}<div align="centre"><h1 class="display-4">Add Price to <a href="{{url_for('app_views.rud_product', product_id=product.id, store_id=product.store_id)}}">{{ product.name }}</a> in <a href="{{url_for('app_views.rud_store', store_id=product.store_id )}}">{{ product.store.name }}</a></h1></div>{% endblock %}
+{% block content %}
+<div class="content-section">
+	{% include 'includes/_formerror.html' %}
+  <br/>
+  {% if form.csrf_token.errors %}
+    <div class="warning">You have submitted an invalid CSRF token</div>
+  {% endif %}
+  <br/>
+  <div class="table-responsive">
+    <br/>
+    <form action="{{url_for('app_views.create_price', product_id=product.id, store_id=product.store_id)}}" method="POST">
+    {{ form.csrf_token }}
+    {% for field in form if not field.name in ["csrf_token", 'price_products', 'submit'] %}
+		<p>{{ field.label }}: {{ field }} <b>{{ " ".join(field.errors) }}</b></p>
+	{% endfor %}
+	    <p hidden='hidden'>{{ form.price_products.label }}: {{ form.price_products }} <b>{{ " ".join(form.price_products.errors) }}</b></p>
+    {{form.submit}}
+    </form>
+  </div>
+</div>
+{% endblock %}

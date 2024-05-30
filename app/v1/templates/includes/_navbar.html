@@ -1,0 +1,48 @@
+<!-- templates/includes/_navbar.html -->
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="{{ url_for('app_views.home') }}">FlayerFX</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <ul class="navbar-nav">
+      <li class="nav-item nav-item-home">
+        <a class="nav-link" href="{{ url_for('app_views.home') }}">
+          Home </a>
+      </li>
+      <li class="nav-item dropdown nav-item-stores">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="prenavbarHandler('{{url_for("api_views.all_stores")}}', postnavbarHandlerJson);">
+          Stores
+        </a>
+        <div id="navbar_store_list"class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="#">Action</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+      <li class="nav-item dropdown nav-item-products">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="prenavbarHandler('{{url_for("api_views.all_products")}}', postnavbarHandlerJsonProducts);">
+          Products
+        </a>
+        <div id="navbar_product_list"class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="#">Action</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+      <li class="nav-item nav-item-about">
+        <a class="nav-link" href="{{ url_for('app_views.about') }}">About</a>
+      </li>
+
+    </ul>
+  </div>
+</nav>
+<div hidden=true>
+    <a id="store_link" href="{{ url_for('app_views.all_stores') }}/"></a>
+    <a id="product_link" href="#"></a>
+</div>
+<script>
+  selectCurrent();
+</script>
+

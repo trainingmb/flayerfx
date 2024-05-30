@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+<!-- templates/user/price_view.html -->
+
+{% block title%}
+Product View
+{% endblock %}
+
+{% block wrapper%}
+<div align="centre">
+	<h1 class="display-4">
+		Price {{price.created_at}} - 
+	<a href="{{url_for('app_views.rud_product', store_id=product.store_id, product_id=product.id)}}">
+		{{ price.product.name }}
+	</a>
+	</h1>
+</div>{% endblock %}
+
+{% block content %}
+{% include 'includes/_formerror.html' %}
+<div id="price_details_view" class='container price'>
+    <div class="price_details align-right">
+        <p>
+            <strong>Amount</strong>:<br> {{price.amount}}
+        </p>
+        <p>
+            <strong>Created At</strong>:<br>{{price.created_at.strftime("%c")}}
+        </p>
+        <p>
+            <strong>Fetched At</strong>:<br>{{price.fetched_at.strftime("%c")}}
+        </p>
+        <p>
+            <strong>Is Discounted</strong>:<br>{{price.is_discount}}
+        </p>
+        <p>
+            <strong>Product Name</strong>:<br>
+            <a href="{{url_for('app_views.rud_product', store_id=product.store_id, product_id=product.id)}}">
+				{{ price.product.name }}
+			</a>
+        </p>
+    </div>
+    <div class="price_details_delete float-right">
+        <form class="" action="{{ url_for('app_views.rud_price', store_id=product.store_id, product_id=product.id, price_id=price.id)}}" method="POST">
+        					<input name="_method" value="DELETE" hidden>
+        					<input class="btn btn-primary btn-sm btn-danger" id="submit" label="delete" name="" type="submit" value="Delete">
+        </form>
+        	</br>
+    </div>
+    <div class="price_details_edit_button float-right">
+        <button id="edit_price_btn" type="button" class="btn btn-primary btn-sm  btn-link"> Edit </button>
+    </div>
+
+</div>
+<div id="price_details_edit" class='container price'>
+    <form action="{{ url_for('app_views.rud_price', store_id=product.store_id, product_id=product.id, price_id=price.id)}}" method="POST">
+    	<table>
+    		<tbody>
+                {{ form.csrf_token }}
+                {% for field in form if not field.name in ["csrf_token", 'submit'] %}
+            		<tr>
+                		<td>{{ field.label }}</td>
+                		<td>{{ field }}</td>
+                		</td><b>{{ " ".join(field.errors) }}</b></td>
+            		</tr>
+            	{% endfor %}
+                <tr>
+                    <td>{{form.submit}}</td>
+                </tr>
+        		<tr>
+        		    <td><button id="cancel_change_btn"class="btn btn-primary btn-sm btn-warning"> Cancel </button></td>
+        	    </tr>
+    		</tbody>
+    	</table>
+    </form>
+</div>
+</br>
+
+
+
+
+<script>
+document.getElementById("edit_price_btn").addEventListener("click", showEdit);
+document.getElementById("cancel_change_btn").addEventListener("click", hideEdit);
+document.getElementById("price_details_edit").style.display = "none";
+function showEdit() {
+	document.getElementById("price_details_view").style.display = "none";
+	document.getElementById("price_details_edit").style.display = "block";
+}
+function hideEdit() {
+	document.getElementById("price_details_edit").style.display = "none";
+	document.getElementById("price_details_view").style.display = "block";
+}
+</script>
+
+{% endblock %}

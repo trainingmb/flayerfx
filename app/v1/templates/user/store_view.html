@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+<!-- templates/user/store_view.html -->
+
+{% block title%}
+Store View
+{% endblock %}
+
+{% block wrapper%}<div align="centre"><h1 class="display-4">Store {{store.name}} </h1></div>{% endblock %}
+
+{% block content %}
+<div id="store_details_view" class='container store'>
+    <div class="store_details align-right">
+            <p>
+                <strong>Name</strong>:{{store.name}}
+            </p>
+    </div>
+    <div class="store_details_delete float-right">
+        <form class="" action="{{ url_for('app_views.rud_store', store_id=store.id)}}" method="POST">
+        					<input name="_method" value="DELETE" hidden>
+        					<input class="btn btn-primary btn-sm btn-danger" id="submit" label="delete" name="" type="submit" value="Delete {{ store.name.split(' ')[0].capitalize() }}">
+        </form>
+        	</br>
+    </div>
+    <div class="store_details_edit_button float-right">
+        <button id="edit_store_btn" type="button" class="btn btn-primary btn-sm  btn-link"> Edit {{ store.name }} </button>
+    </div>
+
+</div>
+<div id="store_details_edit" class='container store'>
+    <form action="{{ url_for('app_views.rud_store', store_id=store.id)}}" method="POST">
+    	<table>
+    		<tbody>
+                {{ form.csrf_token }}
+                {% for field in form if not field.name in ["csrf_token", 'submit'] %}
+            		<tr>
+                		<td>{{ field.label }}</td>
+                		<td>{{ field }}</td>
+                		</td><b>{{ " ".join(field.errors) }}</b></td>
+            		</tr>
+            	{% endfor %}
+                <tr>
+                    <td>{{form.submit}}</td>
+                </tr>
+        		<tr>
+        		    <td><button id="cancel_change_btn"class="btn btn-primary btn-sm btn-warning"> Cancel </button></td>
+        	    </tr>
+    		</tbody>
+    	</table>
+    </form>
+</div>
+<div id="products_in_store">
+	<h4 class="h4"> <a href=""> Products </a> </h4> </br>
+	<div class="well card card-body bg-light">
+	{% if products %}
+	<ul>
+		{% for product in products %}
+		<li>
+			<a href="{{ url_for('app_views.rud_product', store_id=product.store_id, product_id=product.id)}}"> {{product.name}} </a> - {{product.latest_price.amount}} ({{product.price_count}})
+		</li>
+		{% endfor %}
+	</ul>
+	{% endif %}
+	</br>
+	<a href="{{ url_for('app_views.create_product', store_id=store.id)}}"> Add Product </a>
+	</div>
+</div>
+	</br>
+
+
+
+
+<script>
+document.getElementById("edit_store_btn").addEventListener("click", showEdit);
+document.getElementById("cancel_change_btn").addEventListener("click", hideEdit);
+document.getElementById("store_details_edit").style.display = "none";
+function showEdit() {
+	document.getElementById("store_details_view").style.display = "none";
+	document.getElementById("store_details_edit").style.display = "block";
+}
+function hideEdit() {
+	document.getElementById("store_details_edit").style.display = "none";
+	document.getElementById("store_details_view").style.display = "block";
+}
+</script>
+
+{% endblock %}

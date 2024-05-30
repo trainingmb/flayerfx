@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+<!-- templates/user/list_products.html -->
+
+{% block title%}
+List Products
+{% endblock %}
+
+{% block wrapper%}<div align="centre"><h1 class="display-4">Products</h1></div>{% endblock %}
+
+{% block content %}
+<ul id="product_list" class="product_list">
+
+	{% for product in products %}
+	<li>
+		<h4><a href="{{url_for('app_views.rud_product', store_id=product.store_id, product_id=product.id) }}"> {{product.name}} </a> in <a href="{{url_for('app_views.rud_store', store_id=product.store_id) }}"> {{product.store.name}} </a> </h4>
+		<h5>
+			{{product.link}}
+		</h5>
+		<h5>
+			{{product.reference}}
+		</h5>
+	</li>
+	{% endfor %}
+</ul>
+<a class="link" href="#">Create New Product</a>
+{% endblock %}

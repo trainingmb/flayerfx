@@ -1,0 +1,25 @@
+<!-- templates/errors/503.html -->
+
+{% extends "base.html" %}
+{% block title %} Error 503 {% endblock %}
+{% block wrapper %}<h1 class="display-4"> 503 Error </h1>{% endblock %}
+{% block content %}
+<div class="content-section">
+  <div class="outer">
+    <div class="middle">
+      <div class="inner">
+        <div style="text-align: center">
+            <h3> This page is still under Construction. Please feel free to visit other pages or try again later </h3>
+            <h4> {{ err }} </h4>
+            <hr class="intro-divider">
+            <!--suppress HtmlUnknownTarget -->
+            <a class="btn btn-default btn-lg" href="{{ url_for('app_views.home') }}" >
+                <i class="fa fa-home"></i>
+                Home
+            </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
