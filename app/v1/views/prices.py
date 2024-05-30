@@ -43,12 +43,10 @@ def create_price(store_id, product_id):
         if form.validate_on_submit():
             lp = product_obj.latest_price
             if lp is not None and lp.amount == float(form.price_amount.data) and lp.fetched_at < form.price_fetched_at.data:
-                print("#############Old Price ", lp.amount, float(form.price_amount.data))
                 lp.update(form.price_fetched_at.data)
                 lp.save()
                 return redirect(url_for('app_views.rud_price', store_id=store_id, product_id=product_obj.id, price_id=lp.id))
             else:
-                print("#############New Price ", form.price_fetched_at.data)
                 newprice_obj = Price(product_id=product_id, amount=float(form.price_amount.data),
                                        is_discount=form.price_is_discount.data, fetched_at=form.price_fetched_at.data)
                 newprice_obj.save()
