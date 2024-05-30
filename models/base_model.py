@@ -32,7 +32,6 @@ class BaseModel:
             for i, j in args:
                 kwargs[i] = j
         if kwargs:
-            print(kwargs)
             for key, value in kwargs.items():
                 if key != "__class__":
                     if key[-3:] == '_at' and type(value) is str:
