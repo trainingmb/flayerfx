@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-pip install flask flask_cors sqlalchemy mysqlclient python-dateutil flask-wtf flasgger
+pip install flask flask_cors sqlalchemy mysqlclient python-dateutil flask-wtf flasgger regex
 export TZ="Asia/Istanbul"
 export FLAYERFX_MYSQL_USER=flayerfx
 export FLAYERFX_MYSQL_HOST=flayerfx.mysql.pythonanywhere-services.com
