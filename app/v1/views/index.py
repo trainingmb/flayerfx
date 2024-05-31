@@ -3,7 +3,7 @@
 Index for V1 App
 """
 from app.v1.views import app_views, jsonify, render_template
-from models import storage
+from models import storage, storage_t
 from models.base_model import BaseModel, Base
 from models.product import Product
 from models.store import Store
@@ -29,4 +29,4 @@ def about():
     cls = {}
     for name, cl in classes.items():
         cls[name] = storage.count(cl)
-    return render_template("user/about.html", cls=cls)
+    return render_template("user/about.html", cls=cls, storage_t=storage_t)
