@@ -151,7 +151,7 @@ def threaded_crf_scrap(crt):
                 lp = products[item['item_name']].latest_price
                 if(lp is not None and lp.amount == item['item_price']) \
                   and lp.fetched_at < item.get('fetched_at',datetime.now()):
-                    lp.update(form.price_fetched_at.data)
+                    lp.update(item.get('fetched_at',datetime.now())
                     lp.save()
                 else:
                     newprice = Price(product_id = products[item['item_name']].id,
@@ -203,7 +203,7 @@ def threaded_nvs_scrap(crt):
                 lp = products[item['item_name']].latest_price
                 if(lp is not None and lp.amount == item['item_price']) \
                   and lp.fetched_at < item.get('fetched_at',datetime.now()):
-                    lp.update(form.price_fetched_at.data)
+                    lp.update(item.get('fetched_at',datetime.now())
                     lp.save()
                 else:
                     newprice = Price(product_id = products[item['item_name']].id,
