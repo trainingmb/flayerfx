@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# inadis/__init__.py
+# flayer/__init__.py
 
 import os
 
