@@ -145,6 +145,8 @@ def threaded_crf_scrap(crt):
         store_obj = store_obj[0]
     products = {i.name:i for i in store_obj.products}
     prs = crt.get('prices', [])
+    new_prices = []
+    new_products = []
     for item in prs:
         if item['item_name'] in products.keys():
             try:
@@ -156,19 +158,25 @@ def threaded_crf_scrap(crt):
                 else:
                     newprice = Price(product_id = products[item['item_name']].id,
                                      amount = item['item_price'], is_discount = item['item_discount'] == '0% OFF')
-                    newprice.save()
+                    new_prices.append(newprice)
+                    #newprice.save()
             except Exception as e:
                 print(repr(e))
         else:
             try:
                 newproduct = Product(store_id=store_obj.id, link=item['item_link'],
                                      name=item['item_name'], reference=int(item['item_link'].split('/')[-1]))
-                newproduct.save()
+                new_products.append(newproduct)
+                #newproduct.save()
                 newprice = Price(product_id = newproduct.id,
                                  amount = item['item_price'], is_discount = item['item_discount'] == '0% OFF')
-                newprice.save()
+                new_prices.append(newprice)
+                #newprice.save()
             except Exception as e:
                 print(repr(e))
+    storage.add(new_products)
+    storage.add(new_prices)
+    storage.save()
     print("Finished Carrefour")
 
 
@@ -208,19 +216,25 @@ def threaded_nvs_scrap(crt):
                 else:
                     newprice = Price(product_id = products[item['item_name']].id,
                                  amount = item['item_price'], is_discount = item['item_discount'] is not None)
-                    newprice.save()
+                    new_prices.append(newprice)
+                    #newprice.save()
             except Exception as e:
                 print(repr(e))
         else:
             try:
                 newproduct = Product(store_id=store_obj.id, link=item['item_link'],
                                      name=item['item_name'], reference=item['item_reference'])
-                newproduct.save()
+                new_products.append(newproduct)
+                #newproduct.save()
                 newprice = Price(product_id = newproduct.id,
                                  amount = item['item_price'], is_discount = item['item_discount'] is not None)
-                newprice.save()
+                new_prices.append(newprice)
+                #newprice.save()
             except Exception as e:
                 print(repr(e))
+    storage.add(new_products)
+    storage.add(new_prices)
+    storage.save()
     print("Finished Naivas")
 
 @api_views.route('/naivas_scrape', methods=['GET', 'POST'], strict_slashes=False)
