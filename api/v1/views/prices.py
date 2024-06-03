@@ -148,7 +148,7 @@ def threaded_crf_scrap(crt):
     new_prices = []
     new_products = []
     for item in prs:
-        if item['item_name'] in products.keys():
+        if products.get(item['item_name'], None) is not None:
             try:
                 lp = products[item['item_name']].latest_price
                 if(lp is not None and lp.amount == item['item_price']) \
@@ -206,7 +206,7 @@ def threaded_nvs_scrap(crt):
     products = {i.name:i for i in store_obj.products}
     prs = crt.get('prices', [])
     for item in prs:
-        if item['item_name'] in products.keys():
+        if products.get(item['item_name'], None) is not None:
             try:
                 lp = products[item['item_name']].latest_price
                 if(lp is not None and lp.amount == item['item_price']) \
