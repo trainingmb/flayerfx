@@ -34,7 +34,11 @@ class FileStorage:
 
     def new(self, obj):
         """sets in __objects the obj with key <obj class name>.id"""
-        if obj is not None:
+        if type(obj) == list:
+            for i in obj:
+                key = i.__class__.__name__ + "." + i.id
+                self.__objects[key] = i
+        elif obj is not None:
             key = obj.__class__.__name__ + "." + obj.id
             self.__objects[key] = obj
 

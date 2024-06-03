@@ -63,6 +63,8 @@ class DBStorage:
 
     def new(self, obj):
         """add the object to the current database session"""
+        if type(obj) == list:
+            self.__session.add_all(obj)
         self.__session.add(obj)
 
     def save(self):
