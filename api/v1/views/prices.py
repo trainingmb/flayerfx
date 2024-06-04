@@ -174,10 +174,15 @@ def threaded_crf_scrap(crt):
                 #newprice.save()
             except Exception as e:
                 print(repr(e))
-    storage.add(new_products)
-    storage.add(new_prices)
-    storage.save()
-    print("Finished Carrefour")
+    try:
+        print("Bulk adding products carrefour", new_products)
+        storage.new(new_products)
+        print("Bulk adding prices carrefour", new_prices)
+        storage.new(new_prices)
+        storage.save()
+        print("Finished Carrefour")
+    except Exception as e:
+        print(repr(e))
 
 
 @api_views.route('/carrefour_scrape', methods=['GET', 'POST'], strict_slashes=False)
@@ -232,8 +237,10 @@ def threaded_nvs_scrap(crt):
                 #newprice.save()
             except Exception as e:
                 print(repr(e))
-    storage.add(new_products)
-    storage.add(new_prices)
+    print("Bulk adding products naivas")
+    storage.new(new_products)
+    print("Bulk adding prices naivas")
+    storage.new(new_prices)
     storage.save()
     print("Finished Naivas")
 
