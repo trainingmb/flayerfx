@@ -175,9 +175,9 @@ def threaded_crf_scrap(crt):
             except Exception as e:
                 print(repr(e))
     try:
-        print("Bulk adding products carrefour", new_products)
+        print("Bulk adding products carrefour")
         storage.new(new_products)
-        print("Bulk adding prices carrefour", new_prices)
+        print("Bulk adding prices carrefour")
         storage.new(new_prices)
         storage.save()
         print("Finished Carrefour")
@@ -237,11 +237,14 @@ def threaded_nvs_scrap(crt):
                 #newprice.save()
             except Exception as e:
                 print(repr(e))
-    print("Bulk adding products naivas")
-    storage.new(new_products)
-    print("Bulk adding prices naivas")
-    storage.new(new_prices)
-    storage.save()
+    try:
+        print("Bulk adding products naivas")
+        storage.new(new_products)
+        print("Bulk adding prices naivas")
+        storage.new(new_prices)
+        storage.save()
+    except Exception as e:
+        print(repr(e))
     print("Finished Naivas")
 
 @api_views.route('/naivas_scrape', methods=['GET', 'POST'], strict_slashes=False)
