@@ -50,6 +50,6 @@ The project is organized as follows:
 Contributions are welcome! If you have any suggestions or improvements, please open an issue or submit a pull request.
 
 ## License
-This project is licensed under the MIT License. See the [`License`]LICENSE file for details.
+This project is licensed under the MIT License. See the [LICENSE](./License) file for details.
 
 Feel free to customize the content as per your project's specifics.
