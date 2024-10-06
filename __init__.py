@@ -9,6 +9,7 @@ from flask import Flask, render_template
 # from flask_bootstrap import Bootstrap
 
 from app.config import app_config
+from logger import init_logger
 import importlib
 
 
@@ -19,11 +20,13 @@ def create_app(config_name, version):
     :param config_name: The key for the configuration to use
     :return: Flask app
     """
+
     if config_name not in app_config.keys():
         config_name = 'development'
+    app = Flask(__name__, template_folder=f'app/{version}/templates', static_folder=f'app/{version}/static')
+    init_logger(app)
     api_views = importlib.import_module(f'api.{version}.views').api_views
     app_views = importlib.import_module(f'app.{version}.views').app_views
-    app = Flask(__name__, template_folder=f'app/{version}/templates', static_folder=f'app/{version}/static')
     app.config.from_object(".".join(["app", "config", app_config[config_name]]))
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
     app.register_blueprint(api_views)

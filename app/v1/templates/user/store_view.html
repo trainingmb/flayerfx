@@ -2,6 +2,10 @@
 
 <!-- templates/user/store_view.html -->
 
+{% block headcontent %}
+		<script src="/static/js/lproducts.js"></script>
+{% endblock %}
+
 {% block title%}
 Store View
 {% endblock %}
@@ -65,10 +69,18 @@ Store View
 	<a href="{{ url_for('app_views.create_product', store_id=store.id)}}"> Add Product </a>
 	</div>
 </div>
+<div id="static_prod_in_store_div">
+	<button onclick="loadContent()">
+		<div id="static_prod_in_store">
+
+		</div>
+</div>
 	</br>
 
 
-
+<div id="store_id" hidden=hidden>{{store.id}}</div>
+<div id="product_in_store_url" hidden=hidden>{{ url_for('app_views.rud_product', store_id=store.id, product_id='product_id')}}</div>
+<div id="api_products_in_store_url" hidden=hidden>{{ url_for('api_views.get_products', store_id=store.id)}}</div>
 
 <script>
 document.getElementById("edit_store_btn").addEventListener("click", showEdit);
@@ -83,5 +95,6 @@ function hideEdit() {
 	document.getElementById("store_details_view").style.display = "block";
 }
 </script>
+<script src="/static/js/lproducts.js"></script>
 
 {% endblock %}

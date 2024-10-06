@@ -8,18 +8,37 @@ from flask import abort, jsonify, make_response, request
 from flasgger.utils import swag_from
 
 product_tp = {'link': str, 'name': str, 'reference': int}
+page_size = 100
 
-@api_views.route('/products/', methods=['GET'],
+
+def dictify(v):
+    if v is None:
+        return None
+    else:
+        return v.to_dict()
+@api_views.route('/products/', methods=['GET','PUT'],
                  strict_slashes=False)
 #@swag_from('documentation/product/products_by_store.yml', methods=['GET'])
 def all_products():
     """
     Retrieves the list of all products objects
     """
-    list_products = [i.to_dict() for i in storage.all(Product).values()]
+    print(request.get_json('page'))
+    data = request.get_json()
+    if data is not None:
+        page = data.get('page',None)
+        list_products = []
+    for i in storage.all(Product).values():
+        z = i.to_dict()
+        z.update({'latest_price':dictify(i.latest_price), 'price_count':i.price_count})
+        list_products.append(z)
+    if page is not None and type(page) == int and page*page_size < len(list_products) and page >=1 :
+        list_products = list_products[(page-1)*page_size:(page)*page_size]
+    else:
+        list_products = list_products[:page_size]
     return jsonify(list_products)
 
-@api_views.route('/stores/<store_id>/products/', methods=['GET'],
+@api_views.route('/stores/<store_id>/products/', methods=['GET','PUT'],
                  strict_slashes=False)
 #@swag_from('documentation/product/products_by_store.yml', methods=['GET'])
 def get_products(store_id):
@@ -32,12 +51,21 @@ def get_products(store_id):
     if not store:
         abort(404, "Store Not Found")
     store = store[0]
-    for product in store.products:
-        list_products.append(product.to_dict())
-
+    data = request.get_json()
+    if data is not None:
+        page = data.get('page',None)
+    list_products = []
+    for i in store.products:
+        z = i.to_dict()
+        z.update({'latest_price':dictify(i.latest_price), 'price_count':i.price_count})
+        list_products.append(z)
+    if page is not None and type(page) == int and page*page_size < len(list_products) and page >=1 :
+        list_products = list_products[(page-1)*page_size:(page)*page_size]
+    else:
+        list_products = list_products[:page_size]
     return jsonify(list_products)
 
-@api_views.route('/stores_name/<store_name>/products/', methods=['GET'],
+@api_views.route('/stores_name/<store_name>/products/', methods=['GET','PUT'],
                  strict_slashes=False)
 #@swag_from('documentation/product/products_by_store_name.yml', methods=['GET'])
 def get_products_by_name(store_name):
@@ -50,8 +78,18 @@ def get_products_by_name(store_name):
     if not store:
         abort(404, "Store Not Found")
     store = store[0]
-    for product in store.products:
-        list_products.append(product.to_dict())
+    data = request.get_json()
+    if data is not None:
+        page = data.get('page',None)
+    list_products = []
+    for i in store.products:
+        z = i.to_dict()
+        z.update({'latest_price':dictify(i.latest_price), 'price_count':i.price_count})
+        list_products.append(z)
+    if page is not None and type(page) == int and page*page_size < len(list_products) and page >=1 :
+        list_products = list_products[(page-1)*page_size:(page)*page_size]
+    else:
+        list_products = list_products[:page_size]
     return jsonify(list_products)
 
 @api_views.route('/products/<product_id>/', methods=['GET'], strict_slashes=False)
@@ -92,7 +130,7 @@ def post_product(store_id):
     store = storage.get(Store, id = store_id)
     if not store:
         abort(404, "Store Not Found")
-    crt = request.get_json()
+    crt = request.get_data_json()
     if not crt:
         abort(400, description="Not a JSON")
     for i, j in product_tp.items():
@@ -101,7 +139,7 @@ def post_product(store_id):
         elif type(crt[i]) != j:
             abort(400, description="Type of {} is invalid required is {} ".format(i, j))
 
-    data = request.get_json()
+    data = request.get_data_json()
     instance = Product(**data)
     instance.store_id = store[0].id
     instance.save()
@@ -119,7 +157,7 @@ def post_products_by_name(store_name):
     if not store:
         abort(404, "Store Not Found")
     store = store[0]
-    crt = request.get_json()
+    crt = request.get_data_json()
     if not crt:
         abort(400, description="Not a JSON")
     for i, j in product_tp.items():
@@ -128,7 +166,7 @@ def post_products_by_name(store_name):
         elif type(crt[i]) != j:
             abort(400, description="Type of {} is invalid required is {} ".format(i, j))
 
-    data = request.get_json()
+    data = request.get_data_json()
     instance = Product(**data)
     instance.store_id = store.id
     instance.save()
@@ -144,13 +182,13 @@ def put_product(product_id):
     if not product:
         abort(404, "Product Not Found")
     product = product[0]
-    data = request.get_json()
+    data = request.get_data_json()
     if not data:
         abort(400, description="Not a JSON")
 
     ignore = ['id', 'store_id', 'created_at', 'updated_at']
 
-    data = request.get_json()
+    data = request.get_data_json()
     for key, value in data.items():
         if key not in ignore:
             if key in product_tp.keys() and type(value) == product_tp[key]:

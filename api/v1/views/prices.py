@@ -11,12 +11,15 @@ import dateutil.parser
 from flasgger.utils import swag_from
 from regex import match
 from concurrent.futures import ThreadPoolExecutor
+from logger import logHandler
 
 # DOCS https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ThreadPoolExecutor
 executor = ThreadPoolExecutor(2)
 
 price_tp = {'amount': str, 'is_discount': bool}
+
 time = "%Y-%m-%dT%H:%M:%S.%f"
+
 
 @api_views.route('/stores/<store_id>/products/<product_id>/prices', methods=['GET'],
                  strict_slashes=False)
@@ -135,7 +138,7 @@ def put_price(price_id):
 def threaded_crf_scrap(crt):
     """Inserts the scarpped data into the database"""
     list_products = []
-    print("Started Carrefour")
+    logHandler.info("Started Carrefour")
     store_name = crt.get('store')
     store_obj = storage.get(Store, name = store_name)
     if store_obj == None:
@@ -143,6 +146,7 @@ def threaded_crf_scrap(crt):
         store_obj.save()
     else:
         store_obj = store_obj[0]
+    logHandler.info(store_obj.name)
     products = {i.name:i for i in store_obj.products}
     prs = crt.get('prices', [])
     new_prices = []
@@ -161,7 +165,7 @@ def threaded_crf_scrap(crt):
                     new_prices.append(newprice)
                     #newprice.save()
             except Exception as e:
-                print(repr(e))
+                logHandler.info(repr(e))
         else:
             try:
                 newproduct = Product(store_id=store_obj.id, link=item['item_link'],
@@ -173,34 +177,34 @@ def threaded_crf_scrap(crt):
                 new_prices.append(newprice)
                 #newprice.save()
             except Exception as e:
-                print(repr(e))
+                logHandler.info(repr(e))
     try:
-        print("Bulk adding products carrefour")
+        logHandler.info("Bulk adding products carrefour")
         storage.new(new_products)
-        print("Bulk adding prices carrefour")
+        logHandler.info("Bulk adding prices carrefour")
         storage.new(new_prices)
         storage.save()
-        print("Finished Carrefour")
+        logHandler.info("Finished Carrefour")
     except Exception as e:
-        print(repr(e))
+        logHandler.info(repr(e))
 
 
 @api_views.route('/carrefour_scrape', methods=['GET', 'POST'], strict_slashes=False)
 def crf_scrape():
     """ Retrieves the number of each objects by type """
     crt = request.get_json()
-    #print(crt)
+    logHandler.info(crt)
     if not crt:
         abort(400, description="Not a JSON")
     executor.submit(threaded_crf_scrap, crt)
     #ret = {'store':store_obj.to_dict(), 'new products': pds, 'new_prices':newprs}
-    #print('New Items are:\n', ret)
+    #logHandler.info('New Items are:\n', ret)
     return jsonify({})#ret)
 
 def threaded_nvs_scrap(crt):
     """Inserts the scarpped data into the database"""
     list_products = []
-    print("Started Naivas")
+    logHandler.info("Started Naivas")
     store_name = crt.get('store')
     store_obj = storage.get(Store, name = store_name)
     if store_obj == None:
@@ -224,7 +228,7 @@ def threaded_nvs_scrap(crt):
                     new_prices.append(newprice)
                     #newprice.save()
             except Exception as e:
-                print(repr(e))
+                logHandler.info(repr(e))
         else:
             try:
                 newproduct = Product(store_id=store_obj.id, link=item['item_link'],
@@ -236,25 +240,25 @@ def threaded_nvs_scrap(crt):
                 new_prices.append(newprice)
                 #newprice.save()
             except Exception as e:
-                print(repr(e))
+                logHandler.info(repr(e))
     try:
-        print("Bulk adding products naivas")
+        logHandler.info("Bulk adding products naivas")
         storage.new(new_products)
-        print("Bulk adding prices naivas")
+        logHandler.info("Bulk adding prices naivas")
         storage.new(new_prices)
         storage.save()
     except Exception as e:
-        print(repr(e))
-    print("Finished Naivas")
+        logHandler.info(repr(e))
+    logHandler.info("Finished Naivas")
 
 @api_views.route('/naivas_scrape', methods=['GET', 'POST'], strict_slashes=False)
 def nvs_scrape():
     """ Retrieves the number of each objects by type """
     crt = request.get_json()
-    #print(crt)
+    #logHandler.info(crt)
     if not crt:
         abort(400, description="Not a JSON")
     executor.submit(threaded_nvs_scrap, crt)
     #ret = {'store':store_obj.to_dict(), 'new products': pds, 'new_prices':newprs}
-    #print('New Items are:\n', ret)
+    #logHandler.info('New Items are:\n', ret)
     return jsonify({})#ret)

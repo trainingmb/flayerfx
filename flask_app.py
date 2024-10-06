@@ -13,6 +13,12 @@ print("Current Working directory is ", getcwd())
 app = create_app('development', 'v1')
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
+from logger import logHandler
+
+logHandler.info("Starting the Application")
+logHandler.info("Storage Type: {}".format(storage.__class__.__name__))
+
+
 def wants_json_response():
     return request.accept_mimetypes['application/json'] >= \
     request.accept_mimetypes['text/html']

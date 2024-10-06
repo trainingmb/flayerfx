@@ -6,7 +6,6 @@ Initialize Models Package
 from os import getenv, environ
 
 storage_t = getenv("FLAYERFX_TYPE_STORAGE")
-print(environ)
 if storage_t == "db_mysql":
     from models.engine.mysqldb_storage import MySQLDBStorage
     print("Working ON MySQLDB Storage")
