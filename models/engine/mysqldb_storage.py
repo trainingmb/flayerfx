@@ -2,8 +2,8 @@
 """
 Contains the class MySQLDBStorage
 """
-
-from models.engine.db_storage import Base, create_engine, DBStorage, getenv 
+from sqlalchemy import create_engine
+from models.engine.db_storage import Base, DBStorage, getenv 
 
 class MySQLDBStorage(DBStorage):
     """interacts with the MYSQL database"""

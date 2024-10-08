@@ -2,7 +2,8 @@
 """
 Contains the class SQLiteDBStorage
 """
-from models.engine.db_storage import Base, create_engine, DBStorage, path
+from sqlalchemy import create_engine
+from models.engine.db_storage import Base, DBStorage, path
 
 class SQLiteDBStorage(DBStorage):
     """interacts with the SQLite database"""

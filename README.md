@@ -1,4 +1,4 @@
-# flayerfx
+# FlayerFX
 
 flayerfx is a small personal project designed to scrape product prices from various stores and store them in a database. This project aims to provide a simple and efficient way to track price changes over time.
 

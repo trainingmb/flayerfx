@@ -27,7 +27,7 @@ class Product(BaseModel, Base):
         reference = 0
 
     def __init__(self, *args, **kwargs):
-        """initializes user"""
+        """initializes product"""
         super().__init__(*args, **kwargs)
 
     if 'db' not in models.storage_t:

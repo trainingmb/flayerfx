@@ -9,8 +9,7 @@ from models.store import Store
 from models.product import Product
 from models.price import Price
 from os import getenv, path
-import sqlalchemy
-from sqlalchemy import create_engine
+from sqlalchemy import or_
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 classes = {"Store": Store, "Product": Product,
@@ -115,3 +114,15 @@ class DBStorage:
             count = len(models.storage.all(cls).values())
 
         return count
+    
+    def search(self, cls, **kwargs):
+        """
+        Search for an object in the database by kwargs.
+        """
+        if cls not in classes.values():
+            return None
+        filters = [getattr(cls, key).like(f"%{value}%") for key, value in kwargs.items()]
+        filtered_cls = self.__session.query(cls).filter(or_(*filters)).all()
+        if (len(filtered_cls) < 1):
+            return None
+        return filtered_cls

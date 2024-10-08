@@ -20,7 +20,7 @@ class Store(BaseModel, Base):
         name = ""
 
     def __init__(self, *args, **kwargs):
-        """initializes user"""
+        """initializes store"""
         super().__init__(*args, **kwargs)
 
     if 'db' not in models.storage_t:

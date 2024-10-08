@@ -183,5 +183,93 @@ class FLYRFXCommand(cmd.Cmd):
         else:
             print("** class doesn't exist **")
 
+    def do_products(self, arg):
+        """Provides a list of all products in a store"""
+        args = shlex.split(arg)
+        store = None
+        if len(args) == 0:
+            print("** Store ID Missing **")
+            return
+        elif len(args) == 1:
+            dic = {'id': args[0]}
+            store = models.storage.get(Store, **dic)
+        elif len(args) > 1:
+            dic = {args[0]: args[1]}
+            store = models.storage.get(Store, **dic)
+        if store is not None:
+            if len(store) > 1:
+                print("** Multiple Stores Found **")
+                return
+            store = store[0]
+            print(f"{store.name} Products({len(store.products)})")
+            count = 0
+            for item in store.products:
+                lp = item.latest_price
+                if lp is not None:
+                    print(f"{item.name}\t({lp.amount})")
+                else:
+                    print(f"{item.name}\t(?)")
+                count = count + 1
+                if count%10 == 0  and input() in ['x', 'X', 'c', 'C']:
+                    break
+        else:
+            print("** No Store Found **")
+
+    def do_search(self, arg):
+        """Search for a product by name"""
+        args = shlex.split(arg)
+        prod = None
+        print(args)
+        if len(args) == 0:
+            print("** Product Name Missing **")
+            return
+        elif len(args) == 1:
+            dic = {
+                'name': args[0]
+            }
+            prod = models.storage.search(Product, **dic)
+        elif len(args) == 2:
+            dic = {
+                'name': args[0],
+                'store_id': args[1]
+            }
+            prod = models.storage.search(Product, **dic)
+        if prod is None:
+            print("** No Product Found **")
+        else:
+            prod = sorted(prod, key = lambda i: i.store_id)
+            storeid = None
+            for item in prod:
+                if storeid != item.store_id:
+                    storeid = item.store_id
+                    print(f"\n**{item.store.name}**")
+                lp = item.latest_price
+                if lp is not None:
+                    print(f"{item.name}\t({lp.amount})")
+                else:
+                    print(f"{item.name}\t(?)")
+    def do_price_history(self, arg):
+        """Get prices af a specific product:
+            prices <product id> (<limit>)
+        """
+        #TODO: Finish this
+        args = shlex.split(arg)
+        prod = None
+        if len(args) == 0:
+            print("** Product ID Missing **")
+            return
+        elif len(args) == 1:
+            dic = {
+                'id': args[0]
+            }
+            prod = models.storage.get(Product, **dic)
+        if prod is None:
+            print("** No Product Found **")
+        else:
+            prod = prod[0]
+            for price in prod.prices_sorted:
+                print(f"{price.fetched_at}-{price.amount}")
+
+
 if __name__ == '__main__':
     FLYRFXCommand().cmdloop()

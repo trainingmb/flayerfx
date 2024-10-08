@@ -5,7 +5,6 @@ from datetime import datetime
 import models
 from datetime import datetime
 from models.base_model import BaseModel, Base
-import sqlalchemy
 from sqlalchemy import Boolean, Column, DateTime, Float, String, ForeignKey
 from sqlalchemy.orm import relationship
 import dateutil.parser

@@ -5,4 +5,4 @@ export FLAYERFX_MYSQL_USER=flayerfx
 export FLAYERFX_MYSQL_HOST=flayerfx.mysql.pythonanywhere-services.com
 export FLAYERFX_MYSQL_DB="flayerfx$scrap"
 export FLAYERFX_ENV="dev"
-export FLAYERFX_TYPE_STORAGE=db
+export FLAYERFX_TYPE_STORAGE=db_sqlite

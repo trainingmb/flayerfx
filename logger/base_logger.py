@@ -7,7 +7,7 @@ import logging
 from flask import Flask
 
 class BaseLogger:
-    def __init__(self, app: Flask = None, name: str = 'base_logger', level: int = logging.INFO):
+    def __init__(self, app: Flask = None, name: str = 'FlayerFX', level: int = logging.INFO):
         if app:
             self.logger = app.logger
         else:
