@@ -18,6 +18,8 @@ class MySQLDBStorage(DBStorage):
                                       format(FLAYERFX_MYSQL_USER,
                                              FLAYERFX_MYSQL_PWD,
                                              FLAYERFX_MYSQL_HOST,
-                                             FLAYERFX_MYSQL_DB))
+                                             FLAYERFX_MYSQL_DB),
+                                      pool_recycle=3600,
+                                      pool_pre_ping=True)
         Base.metadata.bind = self.__engine
         super().__init__(self.__engine)
