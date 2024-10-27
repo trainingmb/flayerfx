@@ -9,6 +9,43 @@ List Posts
 {% block wrapper%}<div align="centre"><h1 class="display-4">Posts</h1></div>{% endblock %}
 
 {% block content %}
+<div class="container">
+<table class="price_list">
+	<thead>
+		<tr>
+			<th>Amount</th>
+			<th>Product Name</th>
+			<th>Is Discounted</th>
+			<th>Price Time</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for price in prices %}
+			<tr>
+				<td>
+					<a href="{{url_for('app_views.rud_price', store_id=price.product.store_id, product_id=price.product_id, price_id=price.id) }}">
+				        {{price.amount}}
+				    </a>
+				</td>
+				<td>
+					<a href="{{url_for('app_views.rud_product', store_id=price.product.store_id, product_id=price.product_id) }}">{{price.product.name}}</a>
+				</td>
+				<td>
+					{% if price.is_discount %}
+						Yes
+					{% else %}
+						No
+					{% endif %}
+				</td>
+				<td>
+				    Since {{price.created_at.strftime("%c")}} to {{price.fetched_at.strftime("%c")}}
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+</div>
+<!---
 <ul id="price_list" class="price_list">
 
 	{% for price in prices %}
@@ -30,5 +67,22 @@ List Posts
 	</li>
 	{% endfor %}
 </ul>
+	--->
+	<div class="pagination">
+		{% if page > 1 %}
+			<a href="{{ url_for('app_views.all_prices', page=page-1, per_page=per_page) }}">Previous</a>
+		{% else %}
+			<span>Previous</span>
+		{% endif %}
+
+		<span>Page {{ page }} of {{ price_count/per_page }}</span>
+
+		{% if page < price_count/per_page %}
+			<a href="{{ url_for('app_views.all_prices', page=page+1, per_page=per_page) }}">Next</a>
+		{% else %}
+			<span>Next</span>
+		{% endif %}
+	</div>
+
 <a class="link" href="#">Create New Price</a>
 {% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+<!-- templates/user/product_view.html -->
+
+{% block title%}
+Search For Products
+{% endblock %}
+
+{% block includes %}
+{% endblock %}
+
+{% block wrapper%}<div align="centre"><h1 class="display-4">Deals For {{ daterange }}</h1></div>{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% for dic in splitProducts.values() %}
+    <div class="row">
+        <div class="col-md-12">
+            {% if dic['products']|length > 0 %}
+            <h2>Deals for {{ dic['store'].name }}</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Average</th>
+                        <th>Fetched On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in dic['products'] %}
+                        {% if product.deal_price.amount < product.roll_avg %}
+                        <tr>
+                            <td>
+                                <a href="{{url_for('app_views.rud_product', store_id=product.store_id, product_id=product.id) }}"> {{product.name}} </a>
+                            </td>
+                            <td>
+                                {% if product.deal_price %}
+                                {{ product.deal_price.amount }}
+                                {% else %}
+                                No Price Data
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if product.roll_avg %}
+                                {{ product.roll_avg }}
+                                {% else %}
+                                No Price Data
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if product.deal_price %}
+                                {{product.deal_price.fetched_at}} ({{(today - product.deal_price.fetched_at).days}} Days Ago)
+                                {% else %}
+                                No Price Data
+                                {% endif %}
+                            </td>    
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+{% endblock %}

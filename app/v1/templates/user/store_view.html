@@ -10,65 +10,95 @@
 Store View
 {% endblock %}
 
-{% block wrapper%}<div align="centre"><h1 class="display-4">Store {{store.name}} </h1></div>{% endblock %}
 
 {% block content %}
-<div id="store_details_view" class='container store'>
-    <div class="store_details align-right">
-            <p>
-                <strong>Name</strong>:{{store.name}}
-            </p>
-    </div>
-    <div class="store_details_delete float-right">
-        <form class="" action="{{ url_for('app_views.rud_store', store_id=store.id)}}" method="POST">
-        					<input name="_method" value="DELETE" hidden>
-        					<input class="btn btn-primary btn-sm btn-danger" id="submit" label="delete" name="" type="submit" value="Delete {{ store.name.split(' ')[0].capitalize() }}">
-        </form>
-        	</br>
-    </div>
-    <div class="store_details_edit_button float-right">
-        <button id="edit_store_btn" type="button" class="btn btn-primary btn-sm  btn-link"> Edit {{ store.name }} </button>
-    </div>
-
-</div>
-<div id="store_details_edit" class='container store'>
-    <form action="{{ url_for('app_views.rud_store', store_id=store.id)}}" method="POST">
-    	<table>
-    		<tbody>
-                {{ form.csrf_token }}
-                {% for field in form if not field.name in ["csrf_token", 'submit'] %}
-            		<tr>
-                		<td>{{ field.label }}</td>
-                		<td>{{ field }}</td>
-                		</td><b>{{ " ".join(field.errors) }}</b></td>
-            		</tr>
-            	{% endfor %}
-                <tr>
-                    <td>{{form.submit}}</td>
-                </tr>
-        		<tr>
-        		    <td><button id="cancel_change_btn"class="btn btn-primary btn-sm btn-warning"> Cancel </button></td>
-        	    </tr>
-    		</tbody>
-    	</table>
-    </form>
-</div>
-<div id="products_in_store">
-	<h4 class="h4"> <a href=""> Products </a> </h4> </br>
-	<div class="well card card-body bg-light">
-	{% if products %}
-	<ul>
-		{% for product in products %}
-		<li>
-			<a href="{{ url_for('app_views.rud_product', store_id=product.store_id, product_id=product.id)}}"> {{product.name}} </a> - {{product.latest_price.amount}} ({{product.price_count}})
-		</li>
-		{% endfor %}
-	</ul>
-	{% endif %}
-	</br>
-	<a href="{{ url_for('app_views.create_product', store_id=store.id)}}"> Add Product </a>
+<div id="store_details_view" class="container store">
+	<div class="store_details">
+		<h2>{{ store.name }}</h2>
+	</div>
+	<div class="store_details_actions">
+		<form action="{{ url_for('app_views.rud_store', store_id=store.id)}}" method="POST" class="d-inline">
+			<input name="_method" value="DELETE" hidden>
+			<button class="btn btn-danger btn-sm" type="submit">Delete {{ store.name.split(' ')[0].capitalize() }}</button>
+		</form>
+		<button id="edit_store_btn" type="button" class="btn btn-primary btn-sm">Edit {{ store.name }}</button>
 	</div>
 </div>
+
+<div id="store_details_edit" class="container store" style="display: none;">
+	<form action="{{ url_for('app_views.rud_store', store_id=store.id)}}" method="POST">
+		<div class="form-group">
+			{{ form.csrf_token }}
+			{% for field in form if not field.name in ["csrf_token", 'submit'] %}
+				<div class="form-row">
+					<label>{{ field.label }}</label>
+					{{ field }}
+					<small class="form-text text-danger">{{ " ".join(field.errors) }}</small>
+				</div>
+			{% endfor %}
+		</div>
+		<div class="form-group">
+			{{ form.submit(class="btn btn-success btn-sm") }}
+			<button id="cancel_change_btn" type="button" class="btn btn-warning btn-sm">Cancel</button>
+		</div>
+	</form>
+</div>
+
+<div id="products_in_store" class="mt-4">
+	<h4 class="h4"> <a href="#"> Products </a> </h4>
+	<div class="card-deck mt-2">
+		{% if products %}
+			{% for product in products %}
+			<div class="card mb-4">
+				<div class="card-body">
+					<h5 class="card-title">
+						<a href="{{ url_for('app_views.rud_product', store_id=product.store_id, product_id=product.id)}}"> {{product.name}} </a>
+					</h5>
+					<p class="card-text">
+						<span class="badge badge-primary">{{product.latest_price.amount}} ({{product.price_count}})</span>
+					</p>
+				</div>
+			</div>
+			{% endfor %}
+		{% else %}
+		<p class="text-muted">No products available.</p>
+		{% endif %}
+	</div>
+	<a href="{{ url_for('app_views.create_product', store_id=store.id)}}" class="btn btn-primary btn-sm mt-3"> Add Product </a>
+</div>
+
+<div class="pagination">
+	{% if page != 1 %}
+	<a href="{{ url_for('app_views.rud_store', store_id=store.id, page=1) }}" class="page-link">&laquo; First</a>
+	{% endif %}
+	
+	{% if page > 1 %}
+	<a href="{{ url_for('app_views.rud_store', store_id=store.id, page=(page-1)) }}" class="page-link">&lsaquo; Prev</a>
+	{% endif %}
+
+	{% for page_num in range(page-5, page) %}
+	{% if page_num > 1 %}
+	<a href="{{ url_for('app_views.rud_store', store_id=store.id, page=(page_num)) }}" class="page-link">{{ page_num }}</a>
+	{% endif %}
+	{% endfor %}
+	
+	<span class="current-page">{{ page }}</span>
+	
+	{% for page_num in range(page+1, page + 6) %}
+	{% if page_num < total_pages %}
+	<a href="{{ url_for('app_views.rud_store', store_id=store.id, page=(page_num)) }}" class="page-link">{{ page_num }}</a>
+	{% endif %}
+	{% endfor %}
+
+	{% if page < total_pages %}
+	<a href="{{ url_for('app_views.rud_store', store_id=store.id, page=(page+1)) }}" class="page-link">Next &rsaquo;</a>
+	{% endif %}
+
+	{% if page != total_pages %}
+	<a href="{{ url_for('app_views.rud_store', store_id=store.id, page=(total_pages)) }}" class="page-link">Last &raquo;</a>
+	{% endif %}
+</div>
+
 <div id="static_prod_in_store_div">
 	<button onclick="loadContent()">
 		<div id="static_prod_in_store">
@@ -77,10 +107,120 @@ Store View
 </div>
 	</br>
 
-
 <div id="store_id" hidden=hidden>{{store.id}}</div>
 <div id="product_in_store_url" hidden=hidden>{{ url_for('app_views.rud_product', store_id=store.id, product_id='product_id')}}</div>
 <div id="api_products_in_store_url" hidden=hidden>{{ url_for('api_views.get_products', store_id=store.id)}}</div>
+
+<style>
+.container.store {
+	margin-top: 20px;
+	padding: 20px;
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+	background-color: #f8f9fa;
+}
+
+.store_details h2 {
+	margin-bottom: 20px;
+	color: #343a40;
+}
+
+.store_details_actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+}
+
+.store_details_actions .btn {
+	margin-left: 10px;
+}
+
+#store_details_edit .form-group {
+	margin-bottom: 15px;
+}
+
+#store_details_edit .form-row {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 10px;
+}
+
+#store_details_edit .form-row label {
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+
+#store_details_edit .form-row .form-text {
+	margin-top: 5px;
+}
+
+#products_in_store {
+	margin-top: 20px;
+}
+
+#products_in_store h4 a {
+	text-decoration: none;
+	color: #007bff;
+}
+
+#products_in_store .card-deck {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+}
+
+#products_in_store .card {
+	flex: 1 1 calc(33% - 1rem);
+	margin: 0.5rem;
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
+
+#products_in_store .card-body {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+#products_in_store .card-title a {
+	text-decoration: none;
+	color: #007bff;
+}
+
+#products_in_store .card-text .badge {
+	font-size: 1rem;
+}
+
+.pagination {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 20px;
+}
+
+.page-link {
+	margin: 0 5px;
+	padding: 8px 16px;
+	text-decoration: none;
+	color: #007bff;
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
+
+.page-link:hover {
+	background-color: #e9ecef;
+	color: #0056b3;
+}
+
+.current-page {
+	margin: 0 5px;
+	padding: 8px 16px;
+	background-color: #007bff;
+	color: white;
+	border: 1px solid #007bff;
+	border-radius: 4px;
+}
+</style>
 
 <script>
 document.getElementById("edit_store_btn").addEventListener("click", showEdit);

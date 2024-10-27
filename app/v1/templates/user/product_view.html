@@ -11,8 +11,8 @@ Product View
     <script >
         var xyValues = [
                 {% for price in prices %}
-                    {x:{{(today - price.created_at).days}}, y:{{price.amount}}},
-                    {x:{{(today - price.fetched_at).days}}, y:{{price.amount}}},
+                    {x:{{(today - price.created_at).days}} * -1, y:{{price.amount}}},
+                    {x:{{(today - price.fetched_at).days}} * -1, y:{{price.amount}}},
                 {% endfor %}
             ];
         new Chart("myChart", {
@@ -67,27 +67,53 @@ Product View
     </div>
 </div>
 <div id="product_details_edit" class='container product'>
-    <form action="{{ url_for('app_views.rud_product', store_id=product.store_id, product_id=product.id)}}" method="POST">
-    	<table>
-    		<tbody>
-                {{ form.csrf_token }}
-                {% for field in form if not field.name in ["csrf_token", 'submit'] %}
-            		<tr>
-                		<td>{{ field.label }}</td>
-                		<td>{{ field }}</td>
-                		</td><b>{{ " ".join(field.errors) }}</b></td>
-            		</tr>
-            	{% endfor %}
-                <tr>
-                    <td>{{form.submit}}</td>
-                </tr>
-        		<tr>
-        		    <td><button id="cancel_change_btn"class="btn btn-primary btn-sm btn-warning"> Cancel </button></td>
-        	    </tr>
-    		</tbody>
-    	</table>
+    <form action="{{ url_for('app_views.rud_product', store_id=product.store_id, product_id=product.id)}}" method="POST" class="form-horizontal">
+        <div class="form-group">
+            {{ form.csrf_token }}
+            {% for field in form if not field.name in ["csrf_token", 'submit'] %}
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">{{ field.label }}</label>
+                    <div class="col-sm-10">
+                        {{ field(class="form-control") }}
+                        <div class="text-danger">{{ " ".join(field.errors) }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="row mb-3">
+                <div class="col-sm-10 offset-sm-2">
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </div>
+        </div>
     </form>
+    <div class="row mb-3">
+        <div class="col-sm-10 offset-sm-2">
+            <button id="cancel_change_btn" onclick="hideEdit()" class="btn btn-warning">Cancel</button>
+        </div>
+    </div>
 </div>
+
+<style>
+    #product_details_edit {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    #product_details_edit .form-group {
+        margin-bottom: 15px;
+    }
+    #product_details_edit .form-control {
+        border-radius: 4px;
+    }
+    #product_details_edit .btn {
+        margin-right: 10px;
+    }
+</style>
+
+
+
+
 <div id="prices_in_product">
 	<h4 class="h4"> <a href=""> Prices </a> </h4> </br>
     <div>

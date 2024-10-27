@@ -11,15 +11,60 @@ from datetime import datetime
 
 product_tp = {'link': str, 'name': str, 'reference': int}
 
-@app_views.route('/products', methods=['GET'],
-                 strict_slashes=False)
+@app_views.route('/products', methods=['GET'], strict_slashes=False)
 #@swag_from('documentation/product/products_by_store.yml', methods=['GET'])
 def all_products():
     """
-    Retrieves the list of all products objects
+    Retrieves the list of all products objects with pagination
     """
-    products = storage.all(Product).values()
-    return render_template('user/list_products.html', products = products)
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 100, type=int)
+    
+    products = list(storage.all(Product).values())
+    total = len(products)
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_products = products[start:end]
+    
+    return render_template('user/list_products.html', 
+                           products=paginated_products, 
+                           page=page, 
+                           per_page=per_page, 
+                           total=total,
+                           total_pages=total//per_page + 1)
+
+@app_views.route('/orphaned/products', methods=['GET', 'POST'], strict_slashes=False)
+def orphaned_products():
+    """
+    Retrieves the list of orphaned products (products without a valid store_id)
+    and allows updating or deleting them.
+    """
+    products = list(storage.all(Product).values())
+    stores = set([store.id for store in storage.all(Store).values()])
+    orphaned = [product for product in products if product.store_id not in stores]
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        selected_products = request.form.getlist('product_ids')
+        if action == 'delete':
+            for product_id in selected_products:
+                product = storage.get(Product, id=product_id)
+                if product:
+                    product.delete()
+                    storage.save()
+        elif action == 'assign':
+            new_store_id = request.form.get('store_id')
+            if new_store_id in stores:
+                for product_id in selected_products:
+                    product = storage.get(Product, id=product_id)
+                    if product:
+                        product.store_id = new_store_id
+                        product.save()
+                        storage.save()
+        return redirect(url_for('app_views.orphaned_products'))
+
+    all_stores = storage.all(Store).values()
+    return render_template('user/orphaned_products.html', products=orphaned, stores=all_stores)
 
 @app_views.route('/stores/<store_id>/newproduct', methods=['POST', 'GET'], strict_slashes=False)
 def create_product(store_id):
@@ -79,3 +124,52 @@ def rud_product(store_id, product_id):
     form.submit.label.text = "Save Changes"
     prices=product_obj.prices_sorted
     return render_template('user/product_view.html', product=product_obj, prices=prices, today=datetime.today(), form=form)
+
+
+@app_views.route('/stores/<store_id>/merge_products', methods=['GET'])
+def merge_products(store_id):
+    """
+    Merge products with the same reference number into one product entry
+    """
+    store_obj = storage.get(Store, id=store_id)
+    if store_obj is None:
+        abort(404, "Store not Found")
+    store_obj = store_obj[0]
+    
+    products = store_obj.products
+    products_by_reference = {}
+    
+    for product in products:
+        if product.reference not in products_by_reference:
+            products_by_reference[product.reference] = []
+        products_by_reference[product.reference].append(product)
+    
+    from models.price import Price
+    changes_count = {
+        'prices_moved': 0,
+        'products_deleted': 0,
+        'prices_deleted': 0
+    }
+    count = 1
+    for reference, product_list in products_by_reference.items():
+        products_deleted = []
+        if len(product_list) > 1:
+            main_product = product_list[0]
+            for product in product_list[1:]:
+                for price in product.prices:
+                    price.product_id = main_product.id
+                    price.save()
+                    changes_count['prices_moved'] += 1
+                products_deleted.append(product.name)
+                product.delete()
+                changes_count['products_deleted'] += 1
+            main_product.save()
+            print(f"Merged products with reference {reference}: {changes_count}")
+            print(f"Products deleted: {products_deleted}")
+        print(f"Product number {count} of {len(products_by_reference)}")
+        count += 1
+
+    print(f"Total changes made: {changes_count}")
+    
+    storage.save()
+    return redirect(url_for('app_views.rud_store', store_id=store_id))

@@ -52,4 +52,21 @@ def rud_store(store_id):
             store_obj.save()
     form.store_name.data = store_obj.name
     form.submit.label.text = "Save Changes"
+
+        # Pagination logic
+    page = request.args.get('page', 1, type=int)
+    per_page = 100  # Number of products per page
+    products = store_obj.products
+    total = len(products)
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_products = products[start:end]
+
+    return render_template('user/store_view.html',\
+                           store=store_obj,\
+                           products=paginated_products,\
+                           form=form, page=page,\
+                           per_page=per_page,\
+                           total=total,\
+                           total_pages=total//per_page + 1)
     return render_template('user/store_view.html', store=store_obj, products=store_obj.products, form=form)

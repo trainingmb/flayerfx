@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+<!-- templates/user/orphaned_prices.html -->
+
+{% block title %}
+Orphaned Prices
+{% endblock %}
+
+{% block wrapper %}
+<div align="center">
+    <h1 class="display-4">Orphaned Prices</h1>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <style>
+        .price_list {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 18px;
+            text-align: left;
+        }
+        .price_list th, .price_list td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+        .price_list th {
+            background-color: #f2f2f2;
+        }
+        .price_list tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .price_list tr:hover {
+            background-color: #f1f1f1;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+    </style>
+    <form method="POST" action="{{ url_for('app_views.orphaned_prices') }}">
+        <input type="hidden" name="_method" value="DELETE">
+        <table class="price_list">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Amount</th>
+                    <th>Is Discounted</th>
+                    <th>Price Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for price in prices %}
+                <tr>
+                    <td>
+                        <input type="checkbox" name="price_ids" value="{{ price.id }}">
+                    </td>
+                    <td>
+                        <a href="{{ url_for('app_views.rud_price', store_id=price.product.store_id, product_id=price.product_id, price_id=price.id) }}">
+                            {{ price.amount }}
+                        </a>
+                    </td>
+                    <td>
+                        {% if price.is_discount %}
+                            Yes
+                        {% else %}
+                            No
+                        {% endif %}
+                    </td>
+                    <td>
+                        Since {{ price.created_at.strftime("%c") }} to {{ price.fetched_at.strftime("%c") }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-danger">Delete Selected</button>
+    </form>
+</div>
+{% endblock %}

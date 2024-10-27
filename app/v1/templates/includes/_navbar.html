@@ -26,9 +26,10 @@
           Products
         </a>
         <div id="navbar_product_list"class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <a class="dropdown-item" href="#">Something else here</a>
+          <a class="dropdown-item" href="{{ url_for('app_views.search_product') }}">Search</a>
+          <a class="dropdown-item" href="{{ url_for('app_views.todays_discount_product') }}">Today's Discounts</a>
+          <a class="dropdown-item" href="{{ url_for('app_views.all_products') }}">All Products</a>
+          <a class="dropdown-item" href="{{ url_for('app_views.orphaned_products') }}">Orphaned Products</a>
         </div>
       </li>
       <li class="nav-item nav-item-about">

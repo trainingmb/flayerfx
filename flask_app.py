@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 from os import environ, getcwd
 import sys    
-from models import storage
 from __init__ import create_app
 from flask import Flask, render_template, request, make_response, jsonify
 from flask_cors import CORS
@@ -13,7 +12,10 @@ print("Current Working directory is ", getcwd())
 app = create_app('development', 'v1')
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
+#Any other modules that need logHandler must be imported after this line
 from logger import logHandler
+from models import storage
+
 
 logHandler.info("Starting the Application")
 logHandler.info("Storage Type: {}".format(storage.__class__.__name__))

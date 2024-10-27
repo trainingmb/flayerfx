@@ -13,3 +13,4 @@ from app.v1.views.index import *
 from app.v1.views.stores import *
 from app.v1.views.products import *
 from app.v1.views.prices import *
+from app.v1.views.filterproducts import *

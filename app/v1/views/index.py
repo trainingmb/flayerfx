@@ -1,22 +1,33 @@
 #!/usr/bin/python3
 """
-Index for V1 App
+Module: index
+This module defines the routes for the V1 App, including the home and about pages.
+Classes:
+    None
+Public Functions:
+    home(): Handles the route for the home page and renders the home template.
+    about(): Handles the route for the about page, retrieves statistics for all classes, and renders the about template.
+Usage:
+    This module is used to define the endpoints for the home and about pages of the V1 App.
+    Example:
+            # Function implementation
+            # Function implementation
 """
-from app.v1.views import app_views, render_template
-from models import storage, storage_t
-from models.base_model import Base
-from models.product import Product
-from models.store import Store
-from models.price import Price
-from logger import logHandler
 
-classes = {"Store": Store, "Product": Product,
-                "Price": Price}
+from app.v1.views import app_views, render_template
+from logger import logHandler
+from models import storage, storage_t
+from models.class_store import classes
 
 @app_views.route('/home')
 def home():
     """
-    Home for the website
+    Renders the home page for the website.
+
+    Logs a debug message indicating a request for the home page and returns the rendered template for the home page.
+
+    Returns:
+        str: The rendered HTML template for the home page.
     """
     logHandler.debug("Request for Home page")
     return render_template("user/home.html")
@@ -25,9 +36,16 @@ def home():
 @app_views.route('/about')
 def about():
     """
-    Return the JSON statistics
-    for all classes
-    """
+    Handles the request for the About page.
+
+    This function logs the request for the About page, retrieves statistics
+    for all classes from the storage, logs the retrieved statistics, and
+    renders the 'user/about.html' template with the class statistics and
+    storage type.
+
+    Returns:
+        Response: The rendered template for the About page.
+    """    
     logHandler.debug("Request for About Page")
     cls = {}
     for name, cl in classes.items():

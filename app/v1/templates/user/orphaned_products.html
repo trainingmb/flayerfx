@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+<!-- templates/user/orphaned_products.html -->
+
+{% block headcontent %}
+    <style>
+        .product_list {
+            list-style-type: none;
+        }
+        .product_list li {
+            margin-bottom: 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block title %}
+Orphaned Products
+{% endblock %}
+
+{% block content %}
+<h1>Orphaned Products</h1>
+<form method="POST" action="{{ url_for('app_views.orphaned_products') }}">
+    <ul id="product_list" class="product_list">
+        {% for product in products %}
+        <li>
+            <input type="checkbox" name="product_ids" value="{{ product.id }}">
+            <h4>
+                <a href="{{ url_for('app_views.rud_product', store_id=product.store_id, product_id=product.id) }}"> {{ product.name }} </a> 
+                in 
+                <a href="{{ url_for('app_views.rud_store', store_id=product.store_id) }}"> {{ product.store.name }} </a>
+            </h4>
+            <h5>{{ product.link }}</h5>
+            <h5>{{ product.reference }}</h5>
+        </li>
+        {% endfor %}
+    </ul>
+    <div>
+        <select name="store_id">
+            <option value="">Select Store</option>
+            {% for store in stores %}
+            <option value="{{ store.id }}">{{ store.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" name="action" value="assign">Assign to Store</button>
+        <button type="submit" name="action" value="delete">Delete Selected</button>
+    </div>
+</form>
+{% endblock %}

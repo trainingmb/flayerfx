@@ -1,35 +1,109 @@
 #!/usr/bin/python3
 """
-API Base for Product based actions
+Module: prices
+This module defines API endpoints for managing prices related to products and stores.
+Public Functions:
+    all_prices(): Returns a list of all prices.
+    create_price(store_id, product_id): Creates a new price for a specified product in a store.
+    rud_price(store_id, product_id, price_id): Retrieves, updates, or deletes a price with a specified ID.
+Usage:
+    This module is used to handle HTTP requests related to prices, including listing all prices, creating new prices, 
+    and retrieving, updating, or deleting specific prices.
+    Example:
+        # To list all prices
+        GET /prices
+        # To create a new price for a product in a store
+        POST /stores/<store_id>/product/<product_id>/newprice
+        # To retrieve, update, or delete a specific price
+        GET/POST/DELETE /stores/<store_id>/product/<product_id>/prices/<price_id>
 """
-from app.v1.views import app_views, abort, redirect, request, render_template, url_for
-from app.v1.views import BasePriceForm
-from models import storage
-from models.store import Store
-from models.product import Product
-from models.price import Price
+
 from datetime import datetime
+
+from flask import abort, redirect, request, render_template, url_for
+
+from app.v1.views import app_views
+from app.v1.forms import BasePriceForm
+
 from logger import logHandler
 
+from models import storage
+from models.price import Price
+from models.product import Product
+from models.store import Store
+from flask import request
 
 @app_views.route('/prices', methods=['GET'], strict_slashes=False)
+@app_views.route('/prices?<int:page>&<int:per_page>', methods=['GET'], strict_slashes=False)
 #TODO: Restrict this entry point
-def all_prices():
+def all_prices(page=1, per_page=50):
     """
-    Returns a list of all prices
+    Fetches all prices from the storage, sorts them by product ID and fetch time in descending order, 
+    and returns a paginated list of prices.
+    Args:
+        page (int): The current page number for pagination. Defaults to 1.
+        per_page (int): The number of items per page for pagination. Defaults to 50.
+    Returns:
+        Response: Renders the 'user/list_prices.html' template with the paginated prices, 
+                  total price count, current page, and items per page.
     """
-    all_product = {}
-    for i in storage.all(Product).values():
-        all_product[i.id] = i
-    all_prices = storage.all(Price).values()
-    prices=sorted(all_prices, key=lambda i:(i.product_id, i.fetched_at), reverse=True)
-    return render_template('user/list_prices.html', prices=prices, product=all_product)
+    all_prices = list(storage.all(Price).values())
+    prices = sorted(all_prices, key=lambda i: (i.product_id, i.fetched_at), reverse=True)
+    
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_prices = prices[start:end]
+    
+    return render_template('user/list_prices.html', prices=paginated_prices, price_count=len(prices), page=page, per_page=per_page)
+
+@app_views.route('/orphaned/prices', methods=['GET', 'DELETE'], strict_slashes=False)
+def orphaned_prices():
+    """
+    Fetches all orphaned prices (prices without a corresponding product) and either displays them or deletes them.
+    If the request method is DELETE, the selected orphaned prices are deleted from the storage.
+    Returns:
+        Response: Renders the 'user/orphaned_prices.html' template with the list of orphaned prices if the method is GET.
+                    Redirects to the orphaned prices view after deletion if the method is DELETE.
+    """
+    all_prices = list(storage.all(Price).values())
+    orphaned_prices = [price for price in all_prices if storage.get(Product, id=price.product_id) is None]
+
+    if request.method == 'DELETE':
+        selected_price_ids = request.form.getlist('price_ids')
+        for price in orphaned_prices:
+            if str(price.id) in selected_price_ids:
+                price.delete()
+        storage.save()
+        return redirect(url_for('app_views.orphaned_prices'))
+
+    return render_template('user/orphaned_prices.html', prices=orphaned_prices)
+
 
 @app_views.route('/stores/<store_id>/product/<product_id>/newprice', methods=['POST', 'GET'], strict_slashes=False)
 def create_price(store_id, product_id):
     """
-    Create a New Price
-    """
+        This function handles the creation of a new price for a given product in a specified store.
+        It performs the following steps:
+        1. Logs the request to create a new price.
+        2. Retrieves the store object based on the provided store_id.
+        3. If the store is not found, logs a warning and aborts with a 404 error.
+        4. Retrieves the product object based on the provided product_id.
+        5. If the product is not found or does not belong to the store, logs a warning and aborts with a 404 error.
+        6. Initializes a form for price creation.
+        7. If the request method is POST and the form is valid:
+           - Checks if the latest price is the same as the new price and updates the fetched_at timestamp if necessary.
+           - Otherwise, creates a new price object and saves it.
+           - Redirects to the price detail view.
+        8. If the form is not valid, logs a warning.
+        9. Fills the form with default values and renders the price creation template.
+
+        Args:
+            store_id (int): The ID of the store.
+            product_id (int): The ID of the product.
+
+        Returns:
+            Response: The rendered template for price creation or a redirect to the price detail view.
+    """    
     logHandler.debug(f"Request made to create a new price for product <{product_id}> in store <{store_id}>")
     store_obj = storage.get(Store, id = store_id)
     if store_obj is None:

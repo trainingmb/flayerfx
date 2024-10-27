@@ -16,6 +16,39 @@ def dictify(v):
         return None
     else:
         return v.to_dict()
+    
+
+@api_views.route('/clean/products', methods=['GET'], strict_slashes=False)
+def clean_products():
+    """
+    Cleans all products by stripping references and returns statistics
+    """
+    products = storage.all(Product).values()
+    changed_count = 0
+    changes = []
+
+    for product in products:
+        original_reference = product.reference
+        cleaned_reference = str(original_reference).strip()
+        
+        if original_reference != cleaned_reference:
+            product.reference = cleaned_reference
+            changes.append({
+                'product_id': product.id,
+                'original_reference': original_reference,
+                'cleaned_reference': cleaned_reference
+            })
+            changed_count += 1
+            product.save()
+
+    storage.save()
+    
+    return jsonify({
+        'changed_count': changed_count,
+        'changes': changes
+    })
+
+
 @api_views.route('/products/', methods=['GET','PUT'],
                  strict_slashes=False)
 #@swag_from('documentation/product/products_by_store.yml', methods=['GET'])

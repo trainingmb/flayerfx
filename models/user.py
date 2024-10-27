@@ -11,8 +11,8 @@ from sqlalchemy.orm import relationship
 from hashlib import md5
 
 
-class Post(BaseModel, Base):
-    """Representation of a post"""
+class User(BaseModel, Base):
+    """Representation of a user"""
     if models.storage_t == 'db':
         __tablename__ = 'posts'
         creation_id = Column('creationid', String(60), ForeignKey('creations.id'), nullable=False)

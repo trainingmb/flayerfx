@@ -1,14 +1,34 @@
 #!/usr/bin/python3
 """
-API Base for Creations based actions
+Module: posts
+This module provides the API endpoints for handling post-related actions within the application. 
+It includes routes for retrieving all posts, creating a new post, and performing read, update, 
+and delete operations on individual posts.
+Classes:
+    None
+Public Functions:
+    - all_posts(): Returns a list of all posts.
+    - create_post(creator_id, creation_id): Creates a new post for a specific creation by a creator.
+    - rud_post(creator_id, creation_id, post_id): Retrieves, updates, or deletes a specific post.
+Usage:
+    This module is intended to be used as part of a Flask application. It defines routes that can be 
+    registered with a Flask app instance to handle HTTP requests related to posts.
+    Example:
+        app = Flask(__name__)
+        app.register_blueprint(app_views)
+        if __name__ == "__main__":
+            app.run(debug=True)
 """
-from app.v1.views import app_views, jsonify, abort, redirect,request, render_template, url_for
-from app.v1.views import BasePostForm
+from datetime import datetime
+
+from flask import abort, redirect, render_template, request, url_for
+
+from app.v1.views import app_views
+from forms import BasePostForm
 from models import storage
 from models.creator import Creator
 from models.creation import Creation
 from models.post import Post
-from datetime import datetime
 
 
 @app_views.route('/posts', methods=['GET'], strict_slashes=False)
